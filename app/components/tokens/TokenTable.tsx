@@ -96,7 +96,7 @@ const TokenTable = memo(function TokenTable() {
       </div>
 
       {/* Table - Desktop */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto rounded-lg border border-gray-800">
         <table className="w-full min-w-[900px]">
           <thead>
             <tr className="text-left text-sm text-gray-400 border-b border-gray-800">
