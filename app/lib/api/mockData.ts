@@ -1,4 +1,4 @@
-import { Token, TokenStatus } from "../types/index"
+import { Token, TokenStatus } from "../types"
 const tokenNames = [
   'SolanaAI', 'MoonDoge', 'PepeRevolution', 'SafeRocket', 'ElonTrump',
   'MetaVerse', 'CryptoKing', 'DiamondHands', 'RocketMoon', 'BabyShiba',
