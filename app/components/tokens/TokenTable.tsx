@@ -8,6 +8,7 @@ import { setTokens, setLoading, setSorting } from '@/app/lib/store/tokensSlice'
 import { fetchTokens } from '@/app/lib/api/mockData'
 import { TokenStatus, SortField } from '@/app/lib/types'
 import TokenRow from './TokenRow'
+import TokenCard from './TokenTableMobile'
 import { Skeleton } from '../ui/skeleton'
 import { ArrowUpDown } from 'lucide-react'
 
