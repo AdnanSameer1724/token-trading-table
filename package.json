@@ -23,7 +23,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-redux": "^9.2.0",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20.19.27",

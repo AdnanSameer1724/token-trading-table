@@ -1,4 +1,5 @@
 import TokenTable from './components/tokens/TokenTable'
+import PerformanceMonitor from './components/layout/PerformanceMonitor'
 
 export default function Home() {
   return (
@@ -15,6 +16,8 @@ export default function Home() {
         
         <TokenTable />
       </div>
+      
+      <PerformanceMonitor />
     </main>
   )
 }

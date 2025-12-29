@@ -10,12 +10,13 @@ import { TokenStatus, SortField } from '@/app/lib/types'
 import TokenRow from './TokenRow'
 import TokenCard from './TokenTableMobile'
 import { Skeleton } from '../ui/skeleton'
-import { ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown, Search } from 'lucide-react'
 
 const TokenTable = memo(function TokenTable() {
   const dispatch = useAppDispatch()
   const { tokens, loading, sortBy, sortOrder } = useAppSelector(state => state.tokens)
   const [activeTab, setActiveTab] = useState<TokenStatus>(TokenStatus.NEW_PAIR)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['tokens'],
@@ -35,8 +36,17 @@ const TokenTable = memo(function TokenTable() {
   useWebSocket()
 
   const filteredTokens = useMemo(() => {
-    return tokens.filter(token => token.status === activeTab)
-  }, [tokens, activeTab])
+    let filtered = tokens.filter(token => token.status === activeTab)
+    
+    if (searchQuery) {
+      filtered = filtered.filter(token =>
+        token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+    
+    return filtered
+  }, [tokens, activeTab, searchQuery])
 
   const handleSort = (field: SortField) => {
     const newOrder = sortBy === field && sortOrder === 'desc' ? 'asc' : 'desc'
@@ -52,27 +62,41 @@ const TokenTable = memo(function TokenTable() {
   return (
     <div className="w-full">
       {/* Tabs */}
-      <div className="flex gap-4 mb-6 border-b border-gray-800">
-        {tabs.map(tab => (
-          <button
-            key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
-            className={`pb-3 px-2 font-medium transition-colors relative ${
-              activeTab === tab.value
-                ? 'text-white'
-                : 'text-gray-400 hover:text-gray-300'
-            }`}
-          >
-            {tab.label}
-            {activeTab === tab.value && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />
-            )}
-          </button>
-        ))}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
+        <div className="flex gap-4">
+          {tabs.map(tab => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
+              className={`pb-3 px-2 font-medium transition-colors relative ${
+                activeTab === tab.value
+                  ? 'text-white'
+                  : 'text-gray-400 hover:text-gray-300'
+              }`}
+            >
+              {tab.label}
+              {activeTab === tab.value && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />
+              )}
+            </button>
+          ))}
+        </div>
+        
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search tokens..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-gray-900 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
+          />
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
+      {/* Table - Desktop */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full min-w-[900px]">
           <thead>
             <tr className="text-left text-sm text-gray-400 border-b border-gray-800">
@@ -130,6 +154,27 @@ const TokenTable = memo(function TokenTable() {
           </tbody>
         </table>
 
+        {!isLoading && !loading && filteredTokens.length === 0 && (
+          <div className="text-center py-12 text-gray-400">
+            No tokens found in this category
+          </div>
+        )}
+      </div>
+
+      {/* Mobile View */}
+      <div className="md:hidden space-y-3">
+        {isLoading || loading ? (
+          Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+              <Skeleton className="h-20 w-full" />
+            </div>
+          ))
+        ) : (
+          filteredTokens.map((token, index) => (
+            <TokenCard key={token.id} token={token} index={index + 1} />
+          ))
+        )}
+        
         {!isLoading && !loading && filteredTokens.length === 0 && (
           <div className="text-center py-12 text-gray-400">
             No tokens found in this category
